@@ -55,6 +55,10 @@
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges20 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges21 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges22 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges23 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges24 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges25 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges26 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             guna2GroupBox1 = new Guna.UI2.WinForms.Guna2GroupBox();
             btnAdd = new Guna.UI2.WinForms.Guna2Button();
             txtBurst = new Guna.UI2.WinForms.Guna2TextBox();
@@ -74,7 +78,12 @@
             guna2AnimateWindow1 = new Guna.UI2.WinForms.Guna2AnimateWindow(components);
             guna2BorderlessForm1 = new Guna.UI2.WinForms.Guna2BorderlessForm(components);
             flpGantt = new FlowLayoutPanel();
-            txtTimeQuantum = new Guna.UI2.WinForms.Guna2TextBox();
+            txtQuantum = new Guna.UI2.WinForms.Guna2TextBox();
+            txtPriority = new Guna.UI2.WinForms.Guna2TextBox();
+            guna2HtmlLabel1 = new Guna.UI2.WinForms.Guna2HtmlLabel();
+            btnClear = new Guna.UI2.WinForms.Guna2Button();
+            lblAverages = new Guna.UI2.WinForms.Guna2HtmlLabel();
+            exit = new Button();
             guna2GroupBox1.SuspendLayout();
             guna2GroupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvProcess).BeginInit();
@@ -99,7 +108,7 @@
             guna2GroupBox1.ShadowDecoration.CustomizableEdges = customizableEdges10;
             guna2GroupBox1.Size = new Size(214, 219);
             guna2GroupBox1.TabIndex = 0;
-            guna2GroupBox1.Text = "guna2GroupBox1";
+            guna2GroupBox1.Text = "Input Box";
             // 
             // btnAdd
             // 
@@ -116,7 +125,7 @@
             btnAdd.ShadowDecoration.CustomizableEdges = customizableEdges2;
             btnAdd.Size = new Size(137, 22);
             btnAdd.TabIndex = 1;
-            btnAdd.Text = "PROCESS";
+            btnAdd.Text = "INPUT";
             // 
             // txtBurst
             // 
@@ -297,7 +306,7 @@
             btnFCFS.ForeColor = Color.White;
             btnFCFS.HoverState.CustomBorderColor = Color.FromArgb(128, 255, 128);
             btnFCFS.HoverState.FillColor = Color.FromArgb(0, 192, 0);
-            btnFCFS.Location = new Point(26, 270);
+            btnFCFS.Location = new Point(26, 262);
             btnFCFS.Name = "btnFCFS";
             btnFCFS.ShadowDecoration.CustomizableEdges = customizableEdges14;
             btnFCFS.Size = new Size(126, 27);
@@ -314,7 +323,7 @@
             btnSJF.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
             btnSJF.Font = new Font("Segoe UI", 9F);
             btnSJF.ForeColor = Color.White;
-            btnSJF.Location = new Point(26, 317);
+            btnSJF.Location = new Point(26, 306);
             btnSJF.Name = "btnSJF";
             btnSJF.ShadowDecoration.CustomizableEdges = customizableEdges16;
             btnSJF.Size = new Size(126, 27);
@@ -331,7 +340,7 @@
             btnPriority.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
             btnPriority.Font = new Font("Segoe UI", 9F);
             btnPriority.ForeColor = Color.White;
-            btnPriority.Location = new Point(26, 361);
+            btnPriority.Location = new Point(26, 351);
             btnPriority.Name = "btnPriority";
             btnPriority.ShadowDecoration.CustomizableEdges = customizableEdges18;
             btnPriority.Size = new Size(126, 27);
@@ -348,7 +357,7 @@
             btnRR.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
             btnRR.Font = new Font("Segoe UI", 9F);
             btnRR.ForeColor = Color.White;
-            btnRR.Location = new Point(26, 403);
+            btnRR.Location = new Point(26, 394);
             btnRR.Name = "btnRR";
             btnRR.ShadowDecoration.CustomizableEdges = customizableEdges20;
             btnRR.Size = new Size(126, 27);
@@ -359,7 +368,7 @@
             // lblTimeQuantum
             // 
             lblTimeQuantum.BackColor = Color.Transparent;
-            lblTimeQuantum.Location = new Point(211, 237);
+            lblTimeQuantum.Location = new Point(250, 247);
             lblTimeQuantum.Name = "lblTimeQuantum";
             lblTimeQuantum.Size = new Size(86, 17);
             lblTimeQuantum.TabIndex = 6;
@@ -384,44 +393,126 @@
             // flpGantt
             // 
             flpGantt.AutoScroll = true;
-            flpGantt.Location = new Point(250, 285);
+            flpGantt.Location = new Point(250, 270);
             flpGantt.Name = "flpGantt";
-            flpGantt.Size = new Size(538, 169);
+            flpGantt.Size = new Size(538, 184);
             flpGantt.TabIndex = 8;
             // 
-            // txtTimeQuantum
+            // txtQuantum
             // 
-            txtTimeQuantum.CustomizableEdges = customizableEdges21;
-            txtTimeQuantum.DefaultText = "";
-            txtTimeQuantum.DisabledState.BorderColor = Color.FromArgb(208, 208, 208);
-            txtTimeQuantum.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
-            txtTimeQuantum.DisabledState.ForeColor = Color.FromArgb(138, 138, 138);
-            txtTimeQuantum.DisabledState.PlaceholderForeColor = Color.FromArgb(138, 138, 138);
-            txtTimeQuantum.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
-            txtTimeQuantum.Font = new Font("Segoe UI", 9F);
-            txtTimeQuantum.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
-            txtTimeQuantum.Location = new Point(333, 237);
-            txtTimeQuantum.Name = "txtTimeQuantum";
-            txtTimeQuantum.PlaceholderText = "";
-            txtTimeQuantum.SelectedText = "";
-            txtTimeQuantum.ShadowDecoration.CustomizableEdges = customizableEdges22;
-            txtTimeQuantum.Size = new Size(99, 27);
-            txtTimeQuantum.TabIndex = 7;
+            txtQuantum.CustomizableEdges = customizableEdges21;
+            txtQuantum.DefaultText = "";
+            txtQuantum.DisabledState.BorderColor = Color.FromArgb(208, 208, 208);
+            txtQuantum.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
+            txtQuantum.DisabledState.ForeColor = Color.FromArgb(138, 138, 138);
+            txtQuantum.DisabledState.PlaceholderForeColor = Color.FromArgb(138, 138, 138);
+            txtQuantum.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtQuantum.Font = new Font("Segoe UI", 9F);
+            txtQuantum.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtQuantum.Location = new Point(342, 247);
+            txtQuantum.Name = "txtQuantum";
+            txtQuantum.PlaceholderForeColor = Color.White;
+            txtQuantum.PlaceholderText = "";
+            txtQuantum.SelectedText = "";
+            txtQuantum.ShadowDecoration.CustomizableEdges = customizableEdges22;
+            txtQuantum.Size = new Size(100, 17);
+            txtQuantum.TabIndex = 6;
+            // 
+            // txtPriority
+            // 
+            txtPriority.CustomizableEdges = customizableEdges23;
+            txtPriority.DefaultText = "";
+            txtPriority.DisabledState.BorderColor = Color.FromArgb(208, 208, 208);
+            txtPriority.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
+            txtPriority.DisabledState.ForeColor = Color.FromArgb(138, 138, 138);
+            txtPriority.DisabledState.PlaceholderForeColor = Color.FromArgb(138, 138, 138);
+            txtPriority.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtPriority.Font = new Font("Segoe UI", 9F);
+            txtPriority.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtPriority.Location = new Point(508, 247);
+            txtPriority.Name = "txtPriority";
+            txtPriority.PlaceholderForeColor = Color.White;
+            txtPriority.PlaceholderText = "";
+            txtPriority.SelectedText = "";
+            txtPriority.ShadowDecoration.CustomizableEdges = customizableEdges24;
+            txtPriority.Size = new Size(100, 17);
+            txtPriority.TabIndex = 6;
+            // 
+            // guna2HtmlLabel1
+            // 
+            guna2HtmlLabel1.BackColor = Color.Transparent;
+            guna2HtmlLabel1.Location = new Point(458, 247);
+            guna2HtmlLabel1.Name = "guna2HtmlLabel1";
+            guna2HtmlLabel1.Size = new Size(44, 17);
+            guna2HtmlLabel1.TabIndex = 6;
+            guna2HtmlLabel1.Text = "Priority:";
+            // 
+            // btnClear
+            // 
+            btnClear.BackColor = Color.Transparent;
+            btnClear.CustomizableEdges = customizableEdges25;
+            btnClear.DisabledState.BorderColor = Color.DarkGray;
+            btnClear.DisabledState.CustomBorderColor = Color.DarkGray;
+            btnClear.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
+            btnClear.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
+            btnClear.FillColor = Color.Firebrick;
+            btnClear.FocusedColor = Color.FromArgb(128, 255, 255);
+            btnClear.Font = new Font("Segoe UI", 9F);
+            btnClear.ForeColor = Color.White;
+            btnClear.HoverState.CustomBorderColor = Color.FromArgb(128, 255, 128);
+            btnClear.HoverState.FillColor = Color.FromArgb(0, 192, 0);
+            btnClear.Location = new Point(695, 237);
+            btnClear.Name = "btnClear";
+            btnClear.ShadowDecoration.CustomizableEdges = customizableEdges26;
+            btnClear.Size = new Size(82, 27);
+            btnClear.TabIndex = 2;
+            btnClear.Text = "CLEAR";
+            btnClear.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+            // 
+            // lblAverages
+            // 
+            lblAverages.AutoSize = false;
+            lblAverages.BackColor = Color.Transparent;
+            lblAverages.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblAverages.Location = new Point(250, 445);
+            lblAverages.Name = "lblAverages";
+            lblAverages.Size = new Size(450, 19);
+            lblAverages.TabIndex = 9;
+            lblAverages.Text = "Avg Waiting Time: 0ms | Avg Turnaround Time: 0ms";
+            lblAverages.TextAlignment = ContentAlignment.TopCenter;
+            // 
+            // exit
+            // 
+            exit.BackColor = Color.Transparent;
+            exit.ForeColor = Color.OliveDrab;
+            exit.Location = new Point(794, 12);
+            exit.Name = "exit";
+            exit.Size = new Size(29, 23);
+            exit.TabIndex = 10;
+            exit.Text = "X";
+            exit.UseVisualStyleBackColor = false;
+            exit.Click += exit_Click;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(827, 476);
+            Controls.Add(exit);
+            Controls.Add(lblAverages);
             Controls.Add(flpGantt);
-            Controls.Add(txtTimeQuantum);
+            Controls.Add(txtQuantum);
+            Controls.Add(guna2HtmlLabel1);
             Controls.Add(lblTimeQuantum);
+            Controls.Add(txtPriority);
             Controls.Add(btnRR);
             Controls.Add(btnPriority);
             Controls.Add(btnSJF);
+            Controls.Add(btnClear);
             Controls.Add(btnFCFS);
             Controls.Add(guna2GroupBox2);
             Controls.Add(guna2GroupBox1);
+            ForeColor = Color.Red;
             FormBorderStyle = FormBorderStyle.None;
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
@@ -455,6 +546,11 @@
         private Guna.UI2.WinForms.Guna2AnimateWindow guna2AnimateWindow1;
         private Guna.UI2.WinForms.Guna2BorderlessForm guna2BorderlessForm1;
         private FlowLayoutPanel flpGantt;
-        private Guna.UI2.WinForms.Guna2TextBox txtTimeQuantum;
+        private Guna.UI2.WinForms.Guna2TextBox txtQuantum;
+        private Guna.UI2.WinForms.Guna2TextBox txtPriority;
+        private Guna.UI2.WinForms.Guna2HtmlLabel guna2HtmlLabel1;
+        private Guna.UI2.WinForms.Guna2Button btnClear;
+        private Guna.UI2.WinForms.Guna2HtmlLabel lblAverages;
+        private Button exit;
     }
 }
