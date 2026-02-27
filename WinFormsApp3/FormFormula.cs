@@ -38,7 +38,7 @@ namespace WinFormsApp3
                     lblDesc.Text = "Priority Scheduling in Operating Systems is a fundamental CPU scheduling algorithm where each process is assigned a priority, and the operating system selects the highest-priority process to execute next.  Higher-priority processes are executed before lower-priority ones, ensuring critical or urgent tasks receive timely attention.";
                     lblFormula.Text = "Sort By: Priority Ascending";
                     break;
-                case "RR":
+                case "Round Robin":
                     lblDesc.Text = "Round Robin (RR) is a preemptive CPU scheduling algorithm designed to ensure fairness and responsiveness in time-sharing systems.  It operates by assigning a fixed time interval, known as a time quantum (or time slice), to each process in the ready queue.";
                     lblFormula.Text = "Quantum = Defined by user input";
                     break;

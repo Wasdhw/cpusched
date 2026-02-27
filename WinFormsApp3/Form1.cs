@@ -11,6 +11,10 @@ namespace WinFormsApp3
     {
         List<Process> processes = new List<Process>();
         Random rng = new Random();
+        int processIdCounter = 1;
+
+        string selectedAlgorithm = "";
+        bool isRunning = false;
 
         public Form1()
         {
@@ -20,57 +24,8 @@ namespace WinFormsApp3
 
             flpGantt.WrapContents = false;
             flpGantt.AutoScroll = true;
-        }
 
-        private void WireEvents()
-        {
-            btnAdd.Click += BtnAdd_Click;
-
-            // --- BUTTON CLICKS ---
-            btnFCFS.Click += async (s, e) =>
-            {
-                ShowFormulaOnRight("FCFS");
-                await RunScheduling("FCFS");
-            };
-
-            btnSJF.Click += async (s, e) =>
-            {
-                ShowFormulaOnRight("SJF");
-                await RunScheduling("SJF");
-            };
-
-            btnPriority.Click += async (s, e) =>
-            {
-                ShowFormulaOnRight("Priority");
-                await RunScheduling("Priority");
-            };
-
-            btnRR.Click += async (s, e) =>
-            {
-                ShowFormulaOnRight("RR");
-                await RunRoundRobin();
-            };
-
-            btnClear.Click += (s, e) =>
-            {
-                processes.Clear();
-                flpGantt.Controls.Clear();
-                RefreshGrid();
-                UpdateAverages(); 
-            };
-        }
-
-        private void ShowFormulaOnRight(string algorithm)
-        {
-            using (FormFormula info = new FormFormula(algorithm))
-            {
-                info.StartPosition = FormStartPosition.Manual;
-                int gap = 20; 
-                int x = this.Location.X + this.Width + gap;
-                int y = this.Location.Y;
-                info.Location = new Point(x, y);
-                info.ShowDialog();
-            }
+            ToggleInputs("");
         }
 
         private void InitializeGrid()
@@ -83,6 +38,70 @@ namespace WinFormsApp3
             dgvProcess.Columns.Add("WT", "Waiting");
             dgvProcess.Columns.Add("TAT", "Turnaround");
             dgvProcess.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvProcess.AllowUserToAddRows = false;
+            dgvProcess.ColumnHeadersVisible = true;
+            dgvProcess.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            dgvProcess.ColumnHeadersHeight = 25;
+        }
+
+        private void WireEvents()
+        {
+            btnAdd.Click += BtnAdd_Click;
+            btnClear.Click += BtnClear_Click;
+
+            // Algorithm Selection (Since you set ButtonMode to RadioButton, we just track the name)
+            btnFCFS.Click += (s, e) => SelectAlgorithm("FCFS");
+            btnSJF.Click += (s, e) => SelectAlgorithm("SJF");
+            btnPriority.Click += (s, e) => SelectAlgorithm("Priority");
+            btnRR.Click += (s, e) => SelectAlgorithm("Round Robin");
+
+            Control? runBtn = this.Controls.Find("btnRun", true).FirstOrDefault();
+            if (runBtn != null)
+            {
+                runBtn.Click += BtnRun_Click;
+            }
+        }
+
+        private void SelectAlgorithm(string algo)
+        {
+            selectedAlgorithm = algo;
+            ToggleInputs(algo);
+
+            ShowFormulaOnRight(algo);
+        }
+
+        private void ShowFormulaOnRight(string algorithm)
+        {
+            using (FormFormula info = new FormFormula(algorithm))
+            {
+                info.StartPosition = FormStartPosition.Manual;
+
+                int gap = 20;
+                int x = this.Location.X + this.Width + gap;
+                int y = this.Location.Y;
+
+                info.Location = new Point(x, y);
+
+                info.ShowDialog();
+            }
+        }
+
+        private void ToggleInputs(string algo)
+        {
+            Control? txtQ = this.Controls.Find("txtQuantum", true).FirstOrDefault();
+            Control? txtP = this.Controls.Find("txtPriority", true).FirstOrDefault();
+
+            if (txtQ != null)
+            {
+                txtQ.Enabled = (algo == "Round Robin");
+                if (!txtQ.Enabled) txtQ.Text = "";
+            }
+
+            if (txtP != null)
+            {
+                txtP.Enabled = (algo == "Priority");
+                if (!txtP.Enabled) txtP.Text = "";
+            }
         }
 
         private void BtnAdd_Click(object? sender, EventArgs e)
@@ -94,12 +113,12 @@ namespace WinFormsApp3
             }
 
             int prio = 0;
-            var prioControl = this.Controls.Find("txtPriority", true).FirstOrDefault();
-            if (prioControl != null) int.TryParse(prioControl.Text, out prio);
+            Control? txtP = this.Controls.Find("txtPriority", true).FirstOrDefault();
+            if (txtP != null && txtP.Enabled) int.TryParse(txtP.Text, out prio);
 
             processes.Add(new Process
             {
-                PID = string.IsNullOrWhiteSpace(txtPID.Text) ? $"P{processes.Count + 1}" : txtPID.Text,
+                PID = $"P{processIdCounter++}",
                 ArrivalTime = at,
                 BurstTime = bt,
                 Priority = prio,
@@ -108,8 +127,37 @@ namespace WinFormsApp3
             });
 
             RefreshGrid();
-            txtPID.Text = ""; txtArrival.Text = ""; txtBurst.Text = "";
-            if (prioControl != null) prioControl.Text = "";
+            txtArrival.Text = ""; txtBurst.Text = "";
+            if (txtP != null) txtP.Text = "";
+        }
+
+        private async void BtnRun_Click(object? sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(selectedAlgorithm))
+            {
+                MessageBox.Show("Please select an algorithm first.");
+                return;
+            }
+
+            if (processes.Count == 0) return;
+            if (isRunning) return;
+
+            isRunning = true;
+            Control? runBtn = sender as Control;
+            if (runBtn != null) runBtn.Enabled = false;
+
+            try
+            {
+                if (selectedAlgorithm == "Round Robin")
+                    await RunRoundRobin();
+                else
+                    await RunScheduling(selectedAlgorithm);
+            }
+            finally
+            {
+                isRunning = false;
+                if (runBtn != null) runBtn.Enabled = true;
+            }
         }
 
         private async Task RunScheduling(string algorithm)
@@ -122,13 +170,20 @@ namespace WinFormsApp3
             while (remaining.Count > 0)
             {
                 var available = remaining.Where(p => p.ArrivalTime <= currentTime).ToList();
-                if (!available.Any()) { currentTime++; continue; }
+
+                if (!available.Any())
+                {
+                    int nextArrival = remaining.Min(p => p.ArrivalTime);
+                    await DrawGanttBlock("IDLE", nextArrival - currentTime, Color.LightGray, currentTime);
+                    currentTime = nextArrival;
+                    continue;
+                }
 
                 Process current = algorithm switch
                 {
                     "FCFS" => available.OrderBy(p => p.ArrivalTime).First(),
-                    "SJF" => available.OrderBy(p => p.BurstTime).First(),
-                    "Priority" => available.OrderBy(p => p.Priority).First(),
+                    "SJF" => available.OrderBy(p => p.BurstTime).ThenBy(p => p.ArrivalTime).First(),
+                    "Priority" => available.OrderBy(p => p.Priority).ThenBy(p => p.ArrivalTime).First(),
                     _ => available.First()
                 };
 
@@ -140,16 +195,21 @@ namespace WinFormsApp3
                 remaining.Remove(current);
                 RefreshGrid();
             }
-            UpdateAverages(); 
+
+            // --- NEW: Draws the final total time at the very end of the Gantt Chart ---
+            DrawFinalTimeMark(currentTime);
+            UpdateAverages();
         }
 
         private async Task RunRoundRobin()
         {
             flpGantt.Controls.Clear();
             ResetStats();
+
             int quantum = 2;
-            var qControl = this.Controls.Find("txtQuantum", true).FirstOrDefault();
-            if (qControl != null) int.TryParse(qControl.Text, out quantum);
+            Control? txtQ = this.Controls.Find("txtQuantum", true).FirstOrDefault();
+            if (txtQ != null && !string.IsNullOrWhiteSpace(txtQ.Text))
+                int.TryParse(txtQ.Text, out quantum);
 
             int currentTime = 0;
             Queue<Process> queue = new Queue<Process>();
@@ -163,7 +223,13 @@ namespace WinFormsApp3
                     unarrived.RemoveAt(0);
                 }
 
-                if (!queue.Any()) { currentTime++; continue; }
+                if (!queue.Any())
+                {
+                    int nextArrival = unarrived.First().ArrivalTime;
+                    await DrawGanttBlock("IDLE", nextArrival - currentTime, Color.LightGray, currentTime);
+                    currentTime = nextArrival;
+                    continue;
+                }
 
                 var p = queue.Dequeue();
                 int slice = Math.Min(p.RemainingTime, quantum);
@@ -178,7 +244,10 @@ namespace WinFormsApp3
                     unarrived.RemoveAt(0);
                 }
 
-                if (p.RemainingTime > 0) queue.Enqueue(p);
+                if (p.RemainingTime > 0)
+                {
+                    queue.Enqueue(p);
+                }
                 else
                 {
                     p.TurnaroundTime = currentTime - p.ArrivalTime;
@@ -186,30 +255,26 @@ namespace WinFormsApp3
                 }
                 RefreshGrid();
             }
-            UpdateAverages(); 
+
+            // --- NEW: Draws the final total time at the very end of the Gantt Chart ---
+            DrawFinalTimeMark(currentTime);
+            UpdateAverages();
         }
 
-
-        private void UpdateAverages()
+        private void BtnClear_Click(object? sender, EventArgs e)
         {
-            if (processes.Count == 0) return;
-
-            double avgWT = processes.Average(p => p.WaitingTime);
-            double avgTAT = processes.Average(p => p.TurnaroundTime);
-
-            Control lblAvg = this.Controls.Find("lblAverages", true).FirstOrDefault();
-
-            if (lblAvg != null)
-            {
-                lblAvg.Text = $"Avg Waiting Time: {avgWT:F2}ms | Avg Turnaround Time: {avgTAT:F2}ms";
-            }
+            processes.Clear();
+            processIdCounter = 1;
+            flpGantt.Controls.Clear();
+            RefreshGrid();
+            UpdateAverages();
         }
 
         private async Task DrawGanttBlock(string pid, int duration, Color color, int time)
         {
             Panel block = new Panel
             {
-                Width = duration * 30,
+                Width = duration * 40,
                 Height = flpGantt.Height - 30,
                 BackColor = color,
                 Margin = new Padding(0, 5, 0, 5),
@@ -217,16 +282,65 @@ namespace WinFormsApp3
             };
 
             block.Controls.Add(new Label { Text = pid, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Segoe UI", 9, FontStyle.Bold) });
-            block.Controls.Add(new Label { Text = time.ToString(), Dock = DockStyle.Bottom, Height = 15, Font = new Font("Consolas", 7) });
+            block.Controls.Add(new Label { Text = time.ToString(), Dock = DockStyle.Bottom, Height = 15, Font = new Font("Consolas", 8, FontStyle.Bold), TextAlign = ContentAlignment.BottomLeft, BackColor = Color.Transparent });
 
             flpGantt.Controls.Add(block);
             flpGantt.ScrollControlIntoView(block);
-            await Task.Delay(500);
+
+            await Task.Delay(300);
         }
 
-        private void ResetStats() { processes.ForEach(p => { p.RemainingTime = p.BurstTime; p.WaitingTime = 0; p.TurnaroundTime = 0; }); }
+        // --- NEW METHOD: This adds the transparent number block at the end ---
+        private void DrawFinalTimeMark(int time)
+        {
+            Panel mark = new Panel
+            {
+                Width = 35, // Wide enough to hold double digits
+                Height = flpGantt.Height - 30,
+                BackColor = Color.Transparent,
+                Margin = new Padding(0, 5, 0, 5)
+            };
 
-        private void RefreshGrid() { dgvProcess.Rows.Clear(); processes.ForEach(p => dgvProcess.Rows.Add(p.PID, p.ArrivalTime, p.BurstTime, p.Priority, p.WaitingTime, p.TurnaroundTime)); }
+            mark.Controls.Add(new Label
+            {
+                Text = time.ToString(),
+                Dock = DockStyle.Bottom,
+                Height = 15,
+                Font = new Font("Consolas", 8, FontStyle.Bold),
+                TextAlign = ContentAlignment.BottomLeft,
+                BackColor = Color.Transparent
+            });
+
+            flpGantt.Controls.Add(mark);
+            flpGantt.ScrollControlIntoView(mark);
+        }
+
+        private void ResetStats()
+        {
+            processes.ForEach(p => { p.RemainingTime = p.BurstTime; p.WaitingTime = 0; p.TurnaroundTime = 0; });
+        }
+
+        private void RefreshGrid()
+        {
+            dgvProcess.Rows.Clear();
+            processes.ForEach(p => dgvProcess.Rows.Add(p.PID, p.ArrivalTime, p.BurstTime, p.Priority, p.WaitingTime, p.TurnaroundTime));
+        }
+
+        private void UpdateAverages()
+        {
+            Control? lblAvg = this.Controls.Find("lblAverages", true).FirstOrDefault();
+            if (lblAvg != null)
+            {
+                if (processes.Count == 0)
+                {
+                    lblAvg.Text = "Avg Waiting Time: 0.00ms | Avg Turnaround Time: 0.00ms";
+                    return;
+                }
+                double avgWT = processes.Average(p => p.WaitingTime);
+                double avgTAT = processes.Average(p => p.TurnaroundTime);
+                lblAvg.Text = $"Avg Waiting Time: {avgWT:F2}ms | Avg Turnaround Time: {avgTAT:F2}ms";
+            }
+        }
 
         private void exit_Click(object sender, EventArgs e)
         {
